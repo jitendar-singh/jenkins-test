@@ -2,8 +2,8 @@ apiVersion: v1
 kind: BuildConfig
 metadata:
   labels:
-    name: sample-pipeline-openshift-client-plugin
-  name: sample-pipeline-openshift-client-plugin
+    name: sample-pipeline-openshift-client
+  name: sample-pipeline-openshift-client
 spec:
   source:
     type: Git
