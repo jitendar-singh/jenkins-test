@@ -1,0 +1,35 @@
+kind: "BuildConfig"
+apiVersion: "v1"
+metadata:
+  name: "maven-oom-pipeline-onfailure"
+spec:
+  strategy:
+    jenkinsPipelineStrategy:
+      jenkinsfile: |-
+        def gitUrl = "https://github.com/openshift/openshift-jee-sample.git"
+        def project = ""
+        def label = 'maven-oom-onfailure'
+        podTemplate(
+          cloud: 'openshift',
+          label: label,
+          inheritFrom: 'maven',
+          podRetention: onFailure(),
+          containers: [
+            containerTemplate(
+                name: 'jnlp', 
+                image: 'docker.io/openshift/jenkins-agent-maven-35-centos7:v3.11', 
+                resourceRequestMemory: '16Mi', 
+                resourceLimitMemory: '16Mi'
+            )
+          ]
+        ) {
+            node(label) {
+                stage("Checkout") {
+                    git url: gitUrl, branch: "master"
+                }
+                stage("Build WAR") {
+                    sh "mvn clean package -Popenshift"
+                }
+            }
+        } // podTemplate
+      type: JenkinsPipeline
